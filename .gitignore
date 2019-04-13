@@ -1,0 +1,6 @@
+.idea
+.DS_STORE
+src/joesautosv2/DBConnection.java
+out/
+build/
+nbproject/
