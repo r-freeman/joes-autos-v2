@@ -12,8 +12,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class EmployeeRoleTableGateway {
     private static final String TABLE_NAME = "employees";
@@ -32,18 +30,18 @@ public class EmployeeRoleTableGateway {
     }
 
     /**
-     * Returns an instance of the Role class for a given employee id
+     * Returns an instance of the EmployeeRole class for a given employee id
      *
      * @param employeeId
      * @return
      * @throws SQLException
      */
-    public Role getEmployeeRole(int employeeId) throws SQLException {
+    public EmployeeRole getEmployeeRole(int employeeId) throws SQLException {
         String query;
         PreparedStatement st;
         ResultSet rs;
 
-        Role role = null;
+        EmployeeRole employeeRole = null;
         int roleId;
         String roleTitle;
 
@@ -61,10 +59,10 @@ public class EmployeeRoleTableGateway {
             roleId = rs.getInt(COLUMN_ROLE_ID);
             roleTitle = rs.getString(COLUMN_ROLE_TITLE);
 
-            role = new Role(roleId, roleTitle);
+            employeeRole = new EmployeeRole(roleId, roleTitle);
         }
 
-        return role;
+        return employeeRole;
     }
 
     /**
@@ -72,14 +70,14 @@ public class EmployeeRoleTableGateway {
      * @return
      * @throws SQLException
      */
-    public List<Role> getEmployeeRoles() throws SQLException {
+    public List<EmployeeRole> getEmployeeRoles() throws SQLException {
         String query, roleTitle;
         int roleId;
         Statement st;
         ResultSet rs;
 
-        List<Role> roles;
-        Role role;
+        List<EmployeeRole> employeeRoles;
+        EmployeeRole employeeRole;
 
         query = "SELECT er.id as role_id, er.title as role_title " +
                 "FROM employee_roles er";
@@ -87,25 +85,25 @@ public class EmployeeRoleTableGateway {
 
         rs = st.executeQuery(query);
 
-        roles = new ArrayList<Role>();
+        employeeRoles = new ArrayList<EmployeeRole>();
 
         while(rs.next()){
             roleId = rs.getInt(COLUMN_ROLE_ID);
             roleTitle = rs.getString(COLUMN_ROLE_TITLE);
-            role = new Role(roleId, roleTitle);
-            roles.add(role);
+            employeeRole = new EmployeeRole(roleId, roleTitle);
+            employeeRoles.add(employeeRole);
         }
 
-        return roles;
+        return employeeRoles;
     }
 
-    public Role getRoleById(int roleId) throws SQLException {
+    public EmployeeRole getEmployeeRoleById(int roleId) throws SQLException {
         String query, roleTitle;
 
         PreparedStatement st;
         ResultSet rs;
 
-        Role role = null;
+        EmployeeRole employeeRole = null;
 
         query = "SELECT er.title as role_title " +
                 "FROM employee_roles er " +
@@ -117,9 +115,9 @@ public class EmployeeRoleTableGateway {
 
         while(rs.next()){
             roleTitle = rs.getString(COLUMN_ROLE_TITLE);
-            role = new Role(roleId, roleTitle);
+            employeeRole = new EmployeeRole(roleId, roleTitle);
         }
 
-        return role;
+        return employeeRole;
     }
 }

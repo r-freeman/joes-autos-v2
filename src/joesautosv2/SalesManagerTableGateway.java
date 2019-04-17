@@ -17,6 +17,7 @@ import java.util.List;
 public class SalesManagerTableGateway {
     private static final String TABLE_NAME = "sales_managers";
     private static final String COLUMN_SALES_MANAGER_ID = "sales_manager_id";
+    private static final String COLUMN_SALESMAN_ID = "salesman_id";
     private static final String COLUMN_EMPLOYEE_ID = "employee_id";
     private static final String COLUMN_FIRST_NAME = "first_name";
     private static final String COLUMN_LAST_NAME = "last_name";
@@ -30,6 +31,7 @@ public class SalesManagerTableGateway {
     private static final String COLUMN_SALARY = "salary";
     private static final String COLUMN_ROLE_ID = "role_id";
     private static final String COLUMN_QUARTERLY_BONUS = "quarterly_bonus";
+    private static final String COLUMN_COMMISSION_RATE = "commission_rate";
     private static final String COLUMN_REGIONAL_SALES_MANAGER_ID = "regional_sales_manager_id";
 
     private Connection mConnection;
@@ -44,10 +46,11 @@ public class SalesManagerTableGateway {
     }
 
     public SalesManager getSalesManagerByEmployeeId(int employeeId) throws SQLException {
-        int salesManagerId, roleId, regionalSalesManagerId;
+        int salesManagerId, roleId, regionalSalesManagerId, salesmanId;
         String query, firstName, lastName, email, telephone,
                 address, town, city, country, postCode;
-        double salary, quarterlyBonus;
+        double salary, quarterlyBonus, commissionRate;
+        List<Salesman> salesmen = new ArrayList<>();
 
         PreparedStatement st;
         ResultSet rs;
@@ -87,6 +90,45 @@ public class SalesManagerTableGateway {
             salesManager.setEmployeeId(employeeId);
         }
 
+        assert salesManager != null;
+
+        // retrieve the salesmen if any
+        query = "SELECT s.id as salesman_id, s.commission_rate, e.id as employee_id, e.first_name, e.last_name, " +
+                "e.email, e.telephone, e.address, e.town, e.city, e.country, e.post_code, e.salary, e.role_id " +
+                "FROM salesmen s " +
+                "INNER JOIN employees e " +
+                "ON e.id = s.employee_id " +
+                "WHERE s.sales_manager_id=? ";
+
+        st = this.mConnection.prepareStatement(query);
+        st.setInt(1, salesManager.getSalesManagerId());
+        rs = st.executeQuery();
+
+        while (rs.next()) {
+            salesmanId = rs.getInt(COLUMN_SALESMAN_ID);
+            commissionRate = rs.getDouble(COLUMN_COMMISSION_RATE);
+            employeeId = rs.getInt(COLUMN_EMPLOYEE_ID);
+            firstName = rs.getString(COLUMN_FIRST_NAME);
+            lastName = rs.getString(COLUMN_LAST_NAME);
+            email = rs.getString(COLUMN_EMAIL);
+            telephone = rs.getString(COLUMN_TELEPHONE);
+            address = rs.getString(COLUMN_ADDRESS);
+            town = rs.getString(COLUMN_TOWN);
+            city = rs.getString(COLUMN_CITY);
+            country = rs.getString(COLUMN_COUNTRY);
+            postCode = rs.getString(COLUMN_POST_CODE);
+            salary = rs.getDouble(COLUMN_SALARY);
+            roleId = rs.getInt(COLUMN_ROLE_ID);
+
+            Salesman salesman = new Salesman(firstName, lastName, email, telephone, address, town,
+                    city, country, postCode, salary, roleId, salesmanId,
+                    commissionRate, salesManager.getSalesManagerId());
+
+            salesman.setEmployeeId(employeeId);
+            salesmen.add(salesman);
+        }
+
+        salesManager.setSalesmen(salesmen);
         return salesManager;
     }
 
@@ -258,30 +300,62 @@ public class SalesManagerTableGateway {
      * @param salesManager
      * @throws SQLException
      */
-    public void deleteSalesManager (SalesManager salesManager) throws SQLException {
+    public void saveSalesmen(SalesManager salesManager) throws SQLException {
+        List<Salesman> salesmen;
         String query;
         PreparedStatement st;
 
+        salesmen = salesManager.getSalesmen();
+        query = "UPDATE salesmen s " +
+                "SET sales_manager_id=? " +
+                "WHERE s.id=?";
+        st = this.mConnection.prepareStatement(query);
+        st.setInt(1, salesManager.getSalesManagerId());
+
+        // loop through each salesman
+        for(Salesman s : salesmen) {
+            st.setInt(2, s.getSalesmanId());
+            st.executeUpdate();
+        }
+    }
+
+    /**
+     * @param salesManager
+     * @throws SQLException
+     */
+    public void deleteSalesManager(SalesManager salesManager) throws SQLException {
+        String query;
+        PreparedStatement st;
+
+        // remove any relationships to salesmen
+        query = "UPDATE salesmen s " +
+                "SET sales_manager_id=null " +
+                "WHERE s.sales_manager_id=?";
+        st = this.mConnection.prepareStatement(query);
+        st.setInt(1, salesManager.getSalesManagerId());
+
+        st.executeUpdate();
+
+        // remove any relationship to employees table
+        query = "UPDATE " + TABLE_NAME + " sm " +
+                "SET sm.employee_id=null " +
+                "WHERE sm.id=?";
+        st = this.mConnection.prepareStatement(query);
+        st.setInt(1, salesManager.getSalesManagerId());
+
+        st.executeUpdate();
+
         // delete from sales manager table
         query = "DELETE FROM " + TABLE_NAME + " " +
-                "WHERE sales_managers.employee_id=?";
+                "WHERE sales_managers.id=?";
         st = this.mConnection.prepareStatement(query);
-        st.setInt(1, salesManager.getEmployeeId());
+        st.setInt(1, salesManager.getSalesManagerId());
 
         st.executeUpdate();
 
         // delete from employees table
         query = "DELETE FROM employees " +
                 "WHERE employees.id=?";
-        st = this.mConnection.prepareStatement(query);
-        st.setInt(1, salesManager.getEmployeeId());
-
-        st.executeUpdate();
-
-        // remove any relationships to salesmen
-        query = "UPDATE salesmen " +
-                "SET sales_manager_id=null " +
-                "WHERE sales_manager_id=?";
         st = this.mConnection.prepareStatement(query);
         st.setInt(1, salesManager.getEmployeeId());
 

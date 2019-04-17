@@ -1,7 +1,7 @@
 package joesautosv2;
 
-public class Role extends Employee implements Printable{
-    public Role(Integer roleId, String roleTitle) {
+public class EmployeeRole extends Employee implements Printable{
+    public EmployeeRole(Integer roleId, String roleTitle) {
         super(roleId, roleTitle);
     }
 
@@ -13,6 +13,16 @@ public class Role extends Employee implements Printable{
     @Override
     public void printDetails() {
         System.out.println(this.getRoleId() + " : " + this.getRoleTitle());
+    }
+
+    @Override
+    public void printSalesManagers() {
+        // not implemented
+    }
+
+    @Override
+    public void printSalesmen() {
+        // not implemented
     }
 
     @Override

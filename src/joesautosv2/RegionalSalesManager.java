@@ -53,6 +53,24 @@ public class RegionalSalesManager extends Employee implements Printable{
     }
 
     @Override
+    public void printSalesManagers() {
+        List<SalesManager> salesManagers = this.getSalesManagers();
+        if(salesManagers.size() > 0 ){
+            for(SalesManager sm : salesManagers){
+                sm.printDetails();
+            }
+        } else {
+            // not managing any sales managers
+            System.out.println("\nNo sales managers found");
+        }
+    }
+
+    @Override
+    public void printSalesmen() {
+        // not implemented
+    }
+
+    @Override
     public void printSalary() {
 
     }

@@ -41,6 +41,16 @@ public class Admin extends Employee implements Printable {
     }
 
     @Override
+    public void printSalesManagers() {
+        // not implemented
+    }
+
+    @Override
+    public void printSalesmen() {
+        // not implemented
+    }
+
+    @Override
     public void printSalary() {
         System.out.println("Salary : " + this.getSalary());
     }

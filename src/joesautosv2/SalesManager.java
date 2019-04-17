@@ -6,7 +6,7 @@ public class SalesManager extends Employee implements Printable{
     private Integer salesManagerId;
     private double quarterlyBonus;
     private Integer regionalSalesManagerId;
-    private List<Salesman> salesMen;
+    private List<Salesman> salesmen;
 
     public SalesManager() {
     }
@@ -51,12 +51,12 @@ public class SalesManager extends Employee implements Printable{
         this.regionalSalesManagerId = regionalSalesManagerId;
     }
 
-    public List<Salesman> getSalesMen() {
-        return salesMen;
+    public List<Salesman> getSalesmen() {
+        return salesmen;
     }
 
-    public void setSalesMen(List<Salesman> salesMen) {
-        this.salesMen = salesMen;
+    public void setSalesmen(List<Salesman> salesmen) {
+        this.salesmen = salesmen;
     }
 
     @Override
@@ -74,6 +74,24 @@ public class SalesManager extends Employee implements Printable{
         System.out.println("City : " + this.getCity());
         System.out.println("Post code : " + this.getPostCode());
         System.out.println("Country : " + this.getCountry());
+    }
+
+    @Override
+    public void printSalesManagers() {
+        // not implemented
+    }
+
+    @Override
+    public void printSalesmen() {
+        List<Salesman> salesmen = this.getSalesmen();
+        if(salesmen.size() > 0 ){
+            for(Salesman s : salesmen){
+                s.printDetails();
+            }
+        } else {
+            // not managing any salesmen
+            System.out.println("\nNo salesmen found");
+        }
     }
 
     @Override

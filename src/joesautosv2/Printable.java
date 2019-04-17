@@ -11,4 +11,6 @@ public interface Printable {
     abstract void printQuarterlyBonus();
     abstract void printCommissionRate();
     abstract void printSalary();
+    abstract void printSalesManagers();
+    abstract void printSalesmen();
 }

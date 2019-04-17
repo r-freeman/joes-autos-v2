@@ -5,7 +5,6 @@
  */
 package joesautosv2;
 
-import javax.swing.plaf.synth.Region;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -30,8 +29,8 @@ public class Model {
 
     private EmployeeTableGateway employeeTableGateway;
 
-    private Role role;
-    private List<Role> roles;
+    private EmployeeRole employeeRole;
+    private List<EmployeeRole> employeeRoles;
     private EmployeeRoleTableGateway employeeRoleTableGateway;
 
     private Admin admin;
@@ -50,6 +49,21 @@ public class Model {
     private List<Salesman> salesmen;
     private SalesmanTableGateway salesmanTableGateway;
 
+    private Sale sale;
+    private List<Sale> sales;
+    private SaleTableGateway saleTableGateway;
+
+    private double totalSumSales;
+    private int totalNumMotorbikesSold;
+
+    private Motorbike motorbike;
+    private List<Motorbike> motorbikes;
+    private MotorbikeTableGateway motorbikeTableGateway;
+
+    private MotorbikeFrame motorbikeFrame;
+    private List<MotorbikeFrame> motorbikeFrames;
+    private MotorbikeFrameTableGateway motorbikeFrameTableGateway;
+
     private Model() {
         try {
             Connection conn = DBConnection.getInstance();
@@ -59,7 +73,10 @@ public class Model {
             this.adminTableGateway = new AdminTableGateway(conn);
             this.regionalSalesManagerTableGateway = new RegionalSalesManagerTableGateway(conn);
             this.salesManagerTableGateway = new SalesManagerTableGateway(conn);
+            this.saleTableGateway = new SaleTableGateway(conn);
             this.salesmanTableGateway = new SalesmanTableGateway(conn);
+            this.motorbikeTableGateway = new MotorbikeTableGateway(conn);
+            this.motorbikeFrameTableGateway = new MotorbikeFrameTableGateway(conn);
 
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
@@ -67,19 +84,19 @@ public class Model {
     }
 
     /**
-     * Create an instance of role class for given employee id
+     * Create an instance of employeeRole class for given employee id
      *
      * @param employeeId
-     * @return role
+     * @return employeeRole
      */
-    public Role getEmployeeRole(int employeeId) {
+    public EmployeeRole getEmployeeRole(int employeeId) {
         try {
-            this.role = employeeRoleTableGateway.getEmployeeRole(employeeId);
+            this.employeeRole = employeeRoleTableGateway.getEmployeeRole(employeeId);
         } catch (SQLException ex) {
             Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        return this.role;
+        return this.employeeRole;
     }
 
     /**
@@ -96,6 +113,31 @@ public class Model {
         }
 
         return this.admin;
+    }
+
+    /**
+     * @param motorbikeId
+     * @return
+     */
+    public Motorbike getMotorbikeById(int motorbikeId) {
+        try {
+            this.motorbike = motorbikeTableGateway.getMotorbikeById(motorbikeId);
+        } catch (SQLException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return this.motorbike;
+    }
+
+    /**
+     * @param sale
+     */
+    public void addSale(Sale sale) {
+        try {
+            saleTableGateway.addSale(sale);
+        } catch (SQLException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -138,17 +180,29 @@ public class Model {
     }
 
     /**
-     * Return a list of employee roles
+     * Return a list of employee employeeRoles
      *
-     * @return roles
+     * @return employeeRoles
      */
-    public List<Role> getEmployeeRoles() {
+    public List<EmployeeRole> getEmployeeRoles() {
         try {
-            this.roles = employeeRoleTableGateway.getEmployeeRoles();
+            this.employeeRoles = employeeRoleTableGateway.getEmployeeRoles();
         } catch (SQLException ex) {
             Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return this.roles;
+        return this.employeeRoles;
+    }
+
+    /**
+     * @return
+     */
+    public List<MotorbikeFrame> getMotorbikeFrames() {
+        try {
+            this.motorbikeFrames = motorbikeFrameTableGateway.getMotorbikeFrames();
+        } catch (SQLException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return this.motorbikeFrames;
     }
 
     /**
@@ -157,6 +211,17 @@ public class Model {
     public void addAdmin(Admin admin) {
         try {
             this.adminTableGateway.addAdmin(admin);
+        } catch (SQLException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * @param motorbike
+     */
+    public void storeMotorbike(Motorbike motorbike) {
+        try {
+            this.motorbikeTableGateway.storeMotorbike(motorbike);
         } catch (SQLException ex) {
             Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -199,13 +264,26 @@ public class Model {
      * @param roleId
      * @return
      */
-    public Role getRoleById(int roleId) {
+    public EmployeeRole getEmployeeRoleById(int roleId) {
         try {
-            this.role = this.employeeRoleTableGateway.getRoleById(roleId);
+            this.employeeRole = this.employeeRoleTableGateway.getEmployeeRoleById(roleId);
         } catch (SQLException ex) {
             Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return this.role;
+        return this.employeeRole;
+    }
+
+    /**
+     * @param frameId
+     * @return
+     */
+    public MotorbikeFrame getMotorbikeFrameById(int frameId) {
+        try {
+            this.motorbikeFrame = this.motorbikeFrameTableGateway.getMotorbikeFrameById(frameId);
+        } catch (SQLException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return this.motorbikeFrame;
     }
 
     /**
@@ -218,6 +296,93 @@ public class Model {
             Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
         }
         return this.admins;
+    }
+
+    /**
+     * @return
+     */
+    public List<Motorbike> getMotorbikes() {
+        try {
+            this.motorbikes = motorbikeTableGateway.getMotorbikes();
+        } catch (SQLException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return this.motorbikes;
+    }
+
+    /**
+     * @return
+     */
+    public List<Sale> getSales() {
+        try {
+            this.sales = saleTableGateway.getSales();
+        } catch (SQLException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return this.sales;
+    }
+
+    /**
+     * @return
+     */
+    public double getTotalSumSales() {
+        try {
+            this.totalSumSales = saleTableGateway.getTotalSumSales();
+        } catch (SQLException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return this.totalSumSales;
+    }
+
+    /**
+     * @return
+     */
+    public int getTotalNumMotorbikesSold() {
+        try {
+            this.totalNumMotorbikesSold = saleTableGateway.getNumMotorbikesSold();
+        } catch (SQLException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return this.totalNumMotorbikesSold;
+    }
+
+    /**
+     * @param status
+     * @return
+     */
+    public List<Sale> getSalesByStatus(String status) {
+        try {
+            this.sales = saleTableGateway.getSalesByStatus(status);
+        } catch (SQLException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return this.sales;
+    }
+
+    /**
+     * @param salesmanId
+     * @return
+     */
+    public List<Sale> getSalesBySalesmanId(int salesmanId) {
+        try {
+            this.sales = saleTableGateway.getSalesBySalesmanId(salesmanId);
+        } catch (SQLException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return this.sales;
+    }
+
+    /**
+     * @param frameId
+     * @return
+     */
+    public List<Motorbike> getMotorbikesByFrame(int frameId) {
+        try {
+            this.motorbikes = motorbikeTableGateway.getMotorbikesByFrame(frameId);
+        } catch (SQLException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return this.motorbikes;
     }
 
     /**
@@ -247,9 +412,9 @@ public class Model {
     /**
      * @return
      */
-    public List<Salesman> getSalesmen() {
+    public List<Salesman> getSalesmen(boolean listUnsupervised) {
         try {
-            this.salesmen = salesmanTableGateway.getSalesmen();
+            this.salesmen = salesmanTableGateway.getSalesmen(listUnsupervised);
         } catch (SQLException ex) {
             Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -262,6 +427,17 @@ public class Model {
     public void updateAdmin(Admin admin) {
         try {
             this.adminTableGateway.updateAdmin(admin);
+        } catch (SQLException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * @param motorbike
+     */
+    public void updateMotorbike(Motorbike motorbike) {
+        try {
+            this.motorbikeTableGateway.updateMotorbike(motorbike);
         } catch (SQLException ex) {
             Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -315,11 +491,36 @@ public class Model {
     }
 
     /**
+     * @param motorbikeId
+     * @return
+     */
+    public int validateMotorbikeId(int motorbikeId) {
+        int rowCount = 0;
+        try {
+            rowCount = motorbikeTableGateway.validateMotorbikeId(motorbikeId);
+        } catch (SQLException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return rowCount;
+    }
+
+    /**
      * @param admin
      */
     public void deleteAdmin(Admin admin) {
         try {
             adminTableGateway.deleteAdmin(admin);
+        } catch (SQLException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * @param motorbike
+     */
+    public void _deleteMotorbike(Motorbike motorbike) {
+        try {
+            motorbikeTableGateway.deleteMotorbike(motorbike);
         } catch (SQLException ex) {
             Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -353,6 +554,28 @@ public class Model {
     public void deleteSalesman(Salesman salesman) {
         try {
             salesmanTableGateway.deleteSalesman(salesman);
+        } catch (SQLException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * @param regionalSalesManager
+     */
+    public void saveSalesManagers(RegionalSalesManager regionalSalesManager) {
+        try {
+            regionalSalesManagerTableGateway.saveSalesManagers(regionalSalesManager);
+        } catch (SQLException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * @param salesManager
+     */
+    public void saveSalesmen(SalesManager salesManager) {
+        try {
+            salesManagerTableGateway.saveSalesmen(salesManager);
         } catch (SQLException ex) {
             Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
         }

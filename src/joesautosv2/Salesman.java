@@ -1,9 +1,12 @@
 package joesautosv2;
 
+import java.util.List;
+
 public class Salesman extends Employee implements Printable {
     private Integer salesmanId;
     private double commissionRate;
     private Integer salesManagerId;
+    private List<Sale> sales;
 
     public Salesman() {
     }
@@ -44,6 +47,31 @@ public class Salesman extends Employee implements Printable {
         this.salesManagerId = salesManagerId;
     }
 
+    public List<Sale> getSales() {
+        return sales;
+    }
+
+    public void setSales(List<Sale> sales) {
+        this.sales = sales;
+    }
+
+    /**
+     * @param VAT
+     * @param price
+     * @return
+     */
+    public double getSaleTotal(final double VAT, double price) {
+        return price * (1 + VAT);
+    }
+
+    /**
+     * @param price
+     * @return
+     */
+    public double getSaleCommission(double price) {
+        return (price * this.getCommissionRate()) / 100;
+    }
+
     @Override
     public void printName() {
         System.out.println(this.getFirstName() + " " + this.getLastName());
@@ -59,6 +87,16 @@ public class Salesman extends Employee implements Printable {
         System.out.println("City : " + this.getCity());
         System.out.println("Post code : " + this.getPostCode());
         System.out.println("Country : " + this.getCountry());
+    }
+
+    @Override
+    public void printSalesManagers() {
+        // not implemented
+    }
+
+    @Override
+    public void printSalesmen() {
+        // not implemented
     }
 
     @Override

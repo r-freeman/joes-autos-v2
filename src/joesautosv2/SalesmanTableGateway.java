@@ -212,7 +212,7 @@ public class SalesmanTableGateway {
      * @return
      * @throws SQLException
      */
-    public List<Salesman> getSalesmen() throws SQLException {
+    public List<Salesman> getSalesmen(boolean listUnsupervised) throws SQLException {
         String query;
         PreparedStatement st;
         ResultSet rs;
@@ -228,7 +228,12 @@ public class SalesmanTableGateway {
                 "FROM employees e " +
                 "INNER JOIN " + TABLE_NAME + " s " +
                 "ON s.employee_id = e.id " +
-                "WHERE e.role_id=4";
+                "WHERE e.role_id=4 ";
+
+        if(listUnsupervised) {
+            query += "AND s.sales_manager_id IS NULL";
+        }
+
         st = this.mConnection.prepareStatement(query);
 
         rs = st.executeQuery();
